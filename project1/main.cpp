@@ -20,7 +20,6 @@ Execution time, LU decomposition: 0.001802405
 Average absolute difference between LU and Gaussian elimination methods: 4.58690377347359e-15
 */
 
-
 void general_elimination(double *a, double *b, double *c, double *bprime, double *fprime, double *f, double *u, int n)
 {
     // Function to compute forward and backward substitution for general tridiagonal matrix
@@ -207,5 +206,3 @@ int main (int argc, char *argv[])
     ofile.close();
     return 0;
 }
-
-
