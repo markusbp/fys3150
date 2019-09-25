@@ -3,19 +3,28 @@
 #include <string>
 #include "jacobi_rotation.hpp"
 
-void write_to_file(arma::mat &matrix, std::string filename, int n)
+void write_to_file(arma::mat &matrix, std::string filename)
 {
   // Write matrix to binary file, for plotting in Python
   matrix.save(filename, arma::raw_binary);
 }
 
-double test_eigenval_decomp(arma::mat &sym_matrix, arma::vec &eigenvals,
-                          arma::mat &eigenvecs, double a, double d, int n)
+
+double test_tridiagonal(int n)
 {
   // Test that the matrix is set up correctly, by checking eigenvalues using Arma
   double analytical_eigenval = 0;
   double mean_diff = 0;
-  arma::eig_sym(eigenvals, eigenvecs, sym_matrix);
+  double a, d;
+  a = -1.0;
+  d = 2.0;
+  arma::vec eigenvals = arma::zeros(n);
+  arma::mat eigenvecs = arma::zeros(n,n);
+  arma::mat tridiag = arma::zeros(n, n);
+  tridiag.diag() += d;
+  tridiag.diag(-1) -= a;
+  tridiag.diag(+1) -= a;
+  arma::eig_sym(eigenvals, eigenvecs, tridiag);
   for(int i=1; i < n+1; i++)
   {
     analytical_eigenval = d + 2*a*cos(i*M_PI/(n+1));
@@ -25,7 +34,7 @@ double test_eigenval_decomp(arma::mat &sym_matrix, arma::vec &eigenvals,
   return mean_diff;
 }
 
-void test_max_nondiagonal(int n)
+double test_max_nondiagonal(int n)
 {
   // Test if max_nondiagonal can find greatest non-diagonal element
   // Compare result with armadillo max function
@@ -38,8 +47,7 @@ void test_max_nondiagonal(int n)
   double arma_result = abs_matrix.max();
   double algo_result = fabs(max_val);
   double diff = fabs(arma_result - algo_result);
-  std::cout << diff << std::endl;
-  std::cout << max_val << std::endl;
+  return diff;
 }
 
 double test_norm(double tolerance, int n)
