@@ -34,7 +34,7 @@ void jacobi_rotation(arma::mat &sym_matrix, double tolerance,  int n)
   aik = 0; ail = 0; akk = 0; all = 0;
   int k, l, count;
   k = 0; l = 0; count = 0; c = 0; cc = 0; s = 0; ss = 0; t = 0;
-  std::cout << "Diagonalization started..." << std::endl;
+  //std::cout << "Diagonalization started..." << std::endl;
   while(fabs(max_val) > tolerance)
   {
     // Initialize to zero to guarantee finding larger element, but still execute loop
@@ -43,7 +43,7 @@ void jacobi_rotation(arma::mat &sym_matrix, double tolerance,  int n)
     k = max_index[0]; // row, column of largest element
     l = max_index[1];
     tau = (sym_matrix(l, l) - sym_matrix(k, k))/(2.0*sym_matrix(k, l));
-    
+
     if(tau > 0)
     {
       t=1/(tau+sqrt(1+tau*tau));
@@ -70,5 +70,5 @@ void jacobi_rotation(arma::mat &sym_matrix, double tolerance,  int n)
     sym_matrix(k,l)  = 0; sym_matrix(l, k) = sym_matrix(k, l);
     count++; // Keep track of the number of iterations
   }
-  std::cout << "Diagonalization finished in " << count << " iterations." << std::endl;
+  //std::cout << "Diagonalization finished in " << count << " iterations." << std::endl;
 }

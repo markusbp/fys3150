@@ -6,9 +6,8 @@
 void write_to_file(arma::mat &matrix, std::string filename)
 {
   // Write matrix to binary file, for plotting in Python
-  matrix.save(filename, arma::raw_binary);
+  matrix.save(filename, arma::csv_ascii);
 }
-
 
 double test_tridiagonal(int n)
 {

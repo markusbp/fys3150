@@ -1,5 +1,5 @@
 // Let Catch provide main():
-/*#define CATCH_CONFIG_MAIN
+#define CATCH_CONFIG_MAIN
 #include <catch2/catch.hpp>
 #include <armadillo>
 #include "tools.hpp"
@@ -22,4 +22,3 @@ TEST_CASE( "Testing", "[Test all]" )
       REQUIRE(test_max_nondiagonal(n) < tolerance);
     }
 }
-*/
