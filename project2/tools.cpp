@@ -5,7 +5,7 @@
 
 void write_to_file(arma::mat &matrix, std::string filename)
 {
-  // Write matrix to binary file, for plotting in Python
+  // Write matrix to csv file, for plotting in Python
   matrix.save(filename, arma::csv_ascii);
 }
 
@@ -14,9 +14,11 @@ double test_tridiagonal(int n)
   // Test that the matrix is set up correctly, by checking eigenvalues using Arma
   double analytical_eigenval = 0;
   double mean_diff = 0;
-  double a, d;
-  a = -1.0;
-  d = 2.0;
+  double a, d, h, hh;
+  h = 1.0/(n*1.0);
+  hh = h*h;
+  a = -1.0/hh;
+  d = 2.0/hh;
   arma::vec eigenvals = arma::zeros(n);
   arma::mat eigenvecs = arma::zeros(n,n);
   arma::mat tridiag = arma::zeros(n, n);
@@ -52,15 +54,39 @@ double test_max_nondiagonal(int n)
 double test_norm(double tolerance, int n)
 {
   // Test that norm is preserved for Jacobi Rotation Algorithm.
-  double norm_before, norm_after, diff;
+  double norm_before, norm_after, diff, h, hh;
   tolerance = 1e-5;
   arma::mat tridiag = arma::zeros(n, n);
-  tridiag.diag() += 2.0;
-  tridiag.diag(-1) -= 1.0;
-  tridiag.diag(+1) -= 1.0;
+  h = 1.0/(n*1.0);
+  hh = h*h;
+  tridiag.diag() += 2.0/hh;
+  tridiag.diag(-1) -= 1.0/hh;
+  tridiag.diag(+1) -= 1.0/hh;
   norm_before = arma::norm(tridiag, "fro");
   jacobi_rotation(tridiag, tolerance, n);
   norm_after = arma::norm(tridiag, "fro");
   diff = fabs(norm_after - norm_before);
+  return diff;
+}
+
+double test_eigenvals(double tolerance, int n)
+{
+  double h, hh, diff;
+  arma::mat tridiag = arma::zeros(n, n);
+  arma::vec eigenvals = arma::zeros(n);
+  h = 1.0/(n*1.0);
+  hh = h*h;
+  diff = 0;
+  tridiag.diag() += 2.0/hh;
+  tridiag.diag(-1) -= 1.0/hh;
+  tridiag.diag(+1) -= 1.0/hh;
+  arma::eig_sym(eigenvals, tridiag);
+  jacobi_rotation(tridiag, tolerance, n);
+  tridiag.diag() = arma::sort(tridiag.diag()); // sort eigenvalues for comparison
+  for(int i = 0; i < n; i++)
+  {
+    diff += fabs(tridiag(i,i) - eigenvals(i) );
+  }
+  diff = (double) diff/(n*1.0);
   return diff;
 }
