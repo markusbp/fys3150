@@ -27,6 +27,8 @@ void max_nondiagonal(arma::mat &matrix, int (&max_index)[2], double &max_val ,in
 
 void jacobi_rotation(arma::mat &sym_matrix, double tolerance,  int n)
 {
+  // Function for diagonalizing symmetrix matrix sym_matrix of size nxn
+  // repeats until |largest nondiagonal element| is less than tolerance
   double max_val = tolerance*10; // Set to some value which has to be overwritten
   int max_index[2] = {-1, -1}; // Initial indices, garbage value
   double c, cc, s, ss, t, tau; // cos, sin, tan, and tau parameter
@@ -43,8 +45,7 @@ void jacobi_rotation(arma::mat &sym_matrix, double tolerance,  int n)
     k = max_index[0]; // row, column of largest element
     l = max_index[1];
     tau = (sym_matrix(l, l) - sym_matrix(k, k))/(2.0*sym_matrix(k, l));
-
-    if(tau > 0)
+    if(tau > 0) // Selecting tau inspired by lecture notes :-)
     {
       t=1/(tau+sqrt(1+tau*tau));
     }
@@ -59,12 +60,13 @@ void jacobi_rotation(arma::mat &sym_matrix, double tolerance,  int n)
     for (int i = 0; i < n; i++)
     {
       if ((i==k) || (i==l)){continue;}
-      aik = sym_matrix(i, k); ail = sym_matrix(i, l);
+      aik = sym_matrix(i, k); ail = sym_matrix(i, l); // temporary elements
       akk = sym_matrix(k, k); all = sym_matrix(l, l);
-      sym_matrix(i, k) = c*aik - s*ail;
+      sym_matrix(i, k) = c*aik - s*ail; // "rotate" elements
       sym_matrix(i, l) = c*ail + s*aik;
       sym_matrix(k, i) = sym_matrix(i, k); sym_matrix(l, i) = sym_matrix(i, l);
-    }
+    } // set symmetric elements
+    // set special diagonals
     sym_matrix(k, k) = cc*akk - 2*sym_matrix(k, l)*c*s + ss*all;
     sym_matrix(l, l) = cc*all + 2*sym_matrix(k, l)*c*s + ss*akk;
     sym_matrix(k,l)  = 0; sym_matrix(l, k) = sym_matrix(k, l);

@@ -1,3 +1,4 @@
+# Simple makefile
 CC = g++
 CXXFLAGS := -O3 -o#-Wall -g -o -O3
 LIB = -larmadillo

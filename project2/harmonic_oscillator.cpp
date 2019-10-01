@@ -7,7 +7,7 @@
 #include <string>
 #include "tools.hpp"
 #include "jacobi_rotation.hpp"
-
+  
 /* Multi-purpose main function for calculating eigenvalues and normalized
 eigenstates of one- and two-electron quantum energy eigenvalue problems.
 Also times Jacobi's method implementation, and finds the mean error for
@@ -203,6 +203,6 @@ int main(int argc, char *argv[])
     write_to_file(diagonal_elements, eigenval_name);
   }
   else if (program_type == "timing"){time_jacobi_rotation();} // time execution
-  else if (program_type == "error_surface"){find_error_surface();} 
+  else if (program_type == "error_surface"){find_error_surface();}
   return 0;
 }

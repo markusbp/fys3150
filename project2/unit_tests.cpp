@@ -3,7 +3,7 @@
 #include <armadillo>
 #include "tools.hpp"
 #include "jacobi_rotation.hpp"
-
+ 
 TEST_CASE( "Testing", "[Test all]" )
 {
     double tolerance = 1e-10;
