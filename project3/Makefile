@@ -7,7 +7,7 @@ CXXflags = -Wall -g -I$(INC_DIR)
 # Here we define the library functions we nee
 LIB = -larmadillo
 # Here we define the name of the executable
-all = unit_tests gauss_quadrature monte_carlo
+all :  gauss_quadrature monte_carlo parallel_monte_carlo
 
 #unit_tests :	   	unit_tests.o
 #			${CXXFLAGS} unit_tests.o ${LIB} -o unit_tests
@@ -17,6 +17,9 @@ gauss_quadrature : gauss_quadrature.o lib.o gauss_laguerre.o
 
 monte_carlo : monte_carlo.o
 			$(CC) ${CXXFLAGS} monte_carlo.o ${LIB} -o monte_carlo
+
+parallel_monte_carlo : parallel_monte_carlo.cpp
+			mpicxx -O2 -o parallel_monte_carlo parallel_monte_carlo.cpp
 
 #unit_tests.o :			unit_tests.cpp
 #		        	${CXXFLAGS} -c unit_tests.cpp
@@ -32,6 +35,7 @@ gauss_quadrature.o :	gauss_quadrature.cpp
 
 monte_carlo.o : monte_carlo.cpp
 						$(CC)	${CXXFLAGS} -c monte_carlo.cpp
+
 
 clean:
 	 		rm -f core monte_carlo.o gauss_quadrature.o lib.o gauss_laguerre.o unit_tests.o

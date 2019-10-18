@@ -16,7 +16,7 @@ double integrand(arma::vec r1, arma::vec r2)
 {
   double norm_diff = arma::norm(r1 - r2); // norm of difference
   double temp = 0;
-  if (norm_diff > 1e-14)
+  if (norm_diff > 1e-12) 
   {
     temp = (double) (exp(-4*(arma::norm(r1) + arma::norm(r2)))*1.0)/norm_diff;
   }
@@ -91,7 +91,7 @@ double spherical_coordinates(int n)
   r1 = 0; r2 = 0; r_12 = 0; theta1 = 0; theta2 = 0;
   phi1 = 0; phi2 = 0; sinsin = 0; beta = 0, gamma = 0;
 
-  gauss_laguerre(x_r, w_r, n, 2);
+  gauss_laguerre(x_r, w_r, n, 0);
   gauleg(0, 2*M_PI, x_phi, w_phi, n);
   gauleg(0, M_PI, x_theta, w_theta, n);
 
@@ -121,7 +121,7 @@ double spherical_coordinates(int n)
               if(gamma > 1e-12)
               {
                 r_12 = sqrt(gamma);
-                integral  += (double) 1.0/r_12 *exp(-3*(r1 + r2))*sinsin*w_r[p+1]*w_r[m+1]*w_theta[l]*w_theta[k]*w_phi[j]*w_phi[i];
+                integral  += (double) 1.0/r_12 *exp(-3*(r1 + r2))*r1*r1*r2*r2*sinsin*w_r[p+1]*w_r[m+1]*w_theta[l]*w_theta[k]*w_phi[j]*w_phi[i];
               }
             }
           }
