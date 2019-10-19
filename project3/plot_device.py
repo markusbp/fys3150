@@ -26,13 +26,22 @@ legendre_params = np.loadtxt('legendre_profile_params', delimiter = ',')
 lower = legendre_params[0]
 upper = legendre_params[1]
 
-n = legendre_params[2:]
+n_legendre = legendre_params[2:]
 
 # Profile Gauss-Laguerre Quadrature
 laguerre_integral = np.loadtxt('laguerre_profile_results', delimiter = ',')
-
-plt.plot(n, legendre_integral, '-oc')
-plt.plot(n, laguerre_integral, '-ok')
-plt.plot(n, np.ones(len(n))*exact_val, '--')
+laguerre_params = np.loadtxt('laguerre_profile_params', delimiter = ',')
+n_laguerre = laguerre_params[2:]
+plt.plot(n_legendre, legendre_integral, '-ko', linewidth = 0.5)
+plt.plot(n_laguerre, laguerre_integral, '-+', linewidth = 0.5)
+plt.plot(n_legendre, np.ones(len(n_legendre))*exact_val, '--')
 plt.legend(['Legendre', 'Laguerre/Legendre', 'Analytical Value'])
+plt.show()
+
+
+legendrerror = np.log(np.abs(exact_val - legendre_integral))
+laguerror = np.log(np.abs(exact_val - laguerre_integral))
+
+plt.plot(n_legendre, legendrerror, '-o')
+plt.plot(n_laguerre, laguerror, '-+')
 plt.show()

@@ -93,10 +93,18 @@ int main(int argc, char *argv[])
     integral = brute_force(n, upper);
     std::cout << "Integral is approximately " << integral << std::endl;
   }
-  if(integral_type == "importance")
+  else if(integral_type == "importance")
   {
     integral = importance(n);
     std::cout << "Integral is approximately " << integral << std::endl;
+  }
+  else if(integral_type == "profile_importance")
+  {
+    std::cout << "Profiling..." << std::cout;
+  }
+  else
+  {
+    std::cout << "Error" << std::endl;
   }
   return 0;
 }

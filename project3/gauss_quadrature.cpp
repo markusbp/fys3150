@@ -16,7 +16,7 @@ double integrand(arma::vec r1, arma::vec r2)
 {
   double norm_diff = arma::norm(r1 - r2); // norm of difference
   double temp = 0;
-  if (norm_diff > 1e-12) 
+  if (norm_diff > 1e-12)
   {
     temp = (double) (exp(-4*(arma::norm(r1) + arma::norm(r2)))*1.0)/norm_diff;
   }
@@ -162,7 +162,7 @@ int main(int argc, char *argv[])
   {
     int start = 2;
     int num_steps = n;
-    int step = 4;
+    int step = 1;
     lower = atof(argv[3]);
     upper = atof(argv[4]);
     arma::vec results = arma::zeros(num_steps); // integration results for different n
