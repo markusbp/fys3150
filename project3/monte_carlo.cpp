@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
   }
   else if(integral_type == "profile_importance")
   {
-    std::cout << "Profiling..." << std::cout;
+    std::cout << "Profiling..." << std::endl;
   }
   else
   {

@@ -1,12 +1,22 @@
 #include <cmath>
 #include <mpi.h>
 #include <iostream>
+#include <armadillo>
+
+
 
 int main(int argc, char *argv[])
 {
+  std::string program_type;
+  int n = atoi(argv[1]);
+
+
+  double execution_time = 0;
+  double integral = 0;
 
   int num_processes = 0;
   int process_rank  = 0;
+  double start = 0, stop = 0;
   double r1 = 0, r2 = 0, r1r1 = 0, r2r2 = 0, r_12 = 0, alpha = 0;
   double theta1 = 0, theta2 = 0, phi1 = 0, phi2 = 0, sinsin = 0;
   double local_integral = 0, total_integral = 0;
@@ -14,16 +24,24 @@ int main(int argc, char *argv[])
   double jacobi_determinant = 4*pow(M_PI, 4);
   double TWO_PI = 2*M_PI;
 
-  int n = atoi(argv[1]);
+  start = MPI_Wtime();
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &num_processes);
   MPI_Comm_rank(MPI_COMM_WORLD, &process_rank);
-
   MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
   srand(time(NULL) + process_rank); // Initialize RNG
 
-  for(int i = 0; i < n; i++)
+  int n_per_process = n/num_processes;
+
+  if(n%num_processes!=0 && process_rank == 0)
+  {
+    std::cout << "Number of processes and integration points not compatible," <<
+                  "must be equal number of calculations per process." << std::endl;
+    exit(1);
+  }
+
+  for(int i = 0; i < n_per_process; i++)
   {
     r1 = - log( 1 - (double) rand()/RAND_MAX);
     r2 = - log( 1 - (double) rand()/RAND_MAX);
@@ -42,12 +60,16 @@ int main(int argc, char *argv[])
   }
 
   MPI_Reduce(&local_integral, &total_integral, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-  total_integral = (double) total_integral/(n*num_processes)*jacobi_determinant;
+  total_integral = (double) total_integral/(n)*jacobi_determinant;
+  stop = MPI_Wtime();
   if(process_rank == 0)
   {
-    std::cout << "Total integral is approximately " << total_integral << std::endl;
+    integral = total_integral;
+    execution_time = stop - start;
+    std::cout << "Total integral is approximately " << integral << std::endl;
+    std::cout << "Computation finished in " << execution_time << std::endl;
   }
   MPI_Finalize();
-  return 0;
 
+  return 0;
 }

@@ -19,7 +19,7 @@ monte_carlo : monte_carlo.o
 			$(CC) ${CXXFLAGS} monte_carlo.o ${LIB} -o monte_carlo
 
 parallel_monte_carlo : parallel_monte_carlo.cpp
-			mpicxx -O2 -o parallel_monte_carlo parallel_monte_carlo.cpp
+			mpicxx -O2 -o parallel_monte_carlo parallel_monte_carlo.cpp -larmadillo
 
 #unit_tests.o :			unit_tests.cpp
 #		        	${CXXFLAGS} -c unit_tests.cpp
@@ -35,7 +35,6 @@ gauss_quadrature.o :	gauss_quadrature.cpp
 
 monte_carlo.o : monte_carlo.cpp
 						$(CC)	${CXXFLAGS} -c monte_carlo.cpp
-
 
 clean:
 	 		rm -f core monte_carlo.o gauss_quadrature.o lib.o gauss_laguerre.o unit_tests.o
