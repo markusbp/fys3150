@@ -46,7 +46,6 @@ plt.xlabel('n')
 plt.ylabel('Execution Time [s]')
 plt.show()
 
-
 legendrerror = np.log10(np.abs(exact_val - legendre_integral))
 laguerror = np.log10(np.abs(exact_val - laguerre_integral))
 
@@ -62,37 +61,41 @@ brute_timing = np.loadtxt('results/monte_carlo_brute_force_timing', delimiter = 
 brute_integral = np.loadtxt('results/monte_carlo_brute_force_integral', delimiter = ',')
 brute_n_values_monte_carlo = np.loadtxt('results/monte_carlo_brute_force_n_values', delimiter = ',')
 brute_std = np.loadtxt("results/monte_carlo_brute_force_std", delimiter = ',')
-plt.plot(brute_n_values_monte_carlo, brute_integral[:, 0], '-', label = 'Serial', markersize = 4)
-plt.xlabel('n')
-plt.ylabel('Integral')
-plt.show()
 
-plt.plot(brute_n_values_monte_carlo, brute_std)
-plt.ylabel('$\sigma$')
+plt.plot(brute_n_values_monte_carlo, brute_timing, '-', label = 'Serial', markersize = 4)
+plt.xlabel('n')
+plt.ylabel('Execution Time [s]')
 plt.show()
 
 # Profile importance monte carlo without parallel processes
-timing = np.loadtxt('results/monte_carlo_importance_timing', delimiter = ',')
+timing = np.loadtxt('results/figures/monte_carlo_importance_timing', delimiter = ',')
 integral = np.loadtxt('results/monte_carlo_importance_integral', delimiter = ',')
-n_values_monte_carlo = np.loadtxt('results/monte_carlo_n_values', delimiter = ',')
+n_values_monte_carlo = np.loadtxt('results/figures/monte_carlo_n_values', delimiter = ',')
 importance_std = np.loadtxt("results/monte_carlo_importance_std", delimiter = ',')
-plt.plot(n_values_monte_carlo, importance_std)
-plt.ylabel('$\sigma$')
-plt.show()
+
 # Profiling Parallel Monte Carlo for 8 parallel processes
-timing_para = np.loadtxt('results/parallel_monte_carlo_timing', delimiter = ',')
-integral_para = np.loadtxt('results/parallel_monte_carlo_integral', delimiter = ',')
-n_values_para = np.loadtxt('results/parallel_monte_carlo_n_values', delimiter = ',')
+timing_para = np.loadtxt('results/figures/parallel_monte_carlo_timing', delimiter = ',')
+integral_para = np.loadtxt('results/figures/parallel_monte_carlo_integral', delimiter = ',')
+n_values_para = np.loadtxt('results/figures/parallel_monte_carlo_n_values', delimiter = ',')
+
 plt.plot(n_values_monte_carlo, timing, '.', label = 'Serial', markersize = 4)
 plt.plot(n_values_para[:, 0], np.mean(timing_para, axis = 1), '.',  label = 'Parallel', markersize = 4)
+print(np.mean(timing/np.mean(timing_para, axis = 1)), np.std(timing/np.mean(timing_para, axis = 1))/np.sqrt(len(n_values_para[:,0])))
 plt.legend(frameon = False)
 plt.xlabel('n')
 plt.ylabel('Execution time [s]')
 plt.show()
 
-plt.plot(n_values_para[:,0], np.log10(np.abs(integral_para[:, 0]-exact_val)))
-plt.show()
+'''
+timing_importance_long = np.loadtxt('results/figures/monte_carlo_importance_timing', delimiter = ',')
+poly_importance = np.polyfit(n_values_monte_carlo, timing_importance_long, 1)
+poly_para = np.polyfit(n_values_para[:,0], np.mean(timing_para, axis = 1), 1)
 
+plt.plot(n_values_monte_carlo, np.polyval(poly_importance,n_values_monte_carlo))
+plt.plot(n_values_para[:,0], np.polyval( poly_para,n_values_para[:,0]))
+plt.show()
+print(poly_importance, poly_para)
+'''
 '''
 plt.plot(n_values_monte_carlo, integral[:, 0], 'k')
 plt.plot(brute_n_values_monte_carlo, np.ones(len(brute_n_values_monte_carlo))*exact_val, '--')
@@ -110,7 +113,7 @@ plt.show()
 '''
 
 
-
+'''
 # Profile importance monte carlo without parallel processes
 timing = np.loadtxt('results/monte_carlo_importance_timing_low', delimiter = ',')
 integral = np.loadtxt('results/monte_carlo_importance_integral_low', delimiter = ',')
@@ -118,6 +121,7 @@ n_values_monte_carlo = np.loadtxt('results/monte_carlo_n_values_low', delimiter 
 
 plt.plot(n_values_monte_carlo, timing, '.', label = 'Serial', markersize = 4)
 # Profiling Parallel Monte Carlo for 8 parallel processes
+
 timing_para = np.loadtxt('results/parallel_monte_carlo_timing_low', delimiter = ',')
 integral_para = np.loadtxt('results/parallel_monte_carlo_integral_low', delimiter = ',')
 n_values_para = np.loadtxt('results/parallel_monte_carlo_n_values_low', delimiter = ',')
@@ -134,3 +138,4 @@ plt.legend(frameon = False)
 plt.xlabel('n')
 plt.ylabel('Error')
 plt.show()
+'''

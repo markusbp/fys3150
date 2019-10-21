@@ -7,7 +7,7 @@
 #include <string>
 #include "tools.hpp"
 #include "jacobi_rotation.hpp"
-  
+
 /* Multi-purpose main function for calculating eigenvalues and normalized
 eigenstates of one- and two-electron quantum energy eigenvalue problems.
 Also times Jacobi's method implementation, and finds the mean error for

@@ -2,7 +2,7 @@
 # shell script for calculating MPI-monte Carlo multiple times - kind of hacky :()
 for ((i=1;i<=100;i++)) do
     for ((j=1;j<=5;j++)) do
-        mpiexec -n 8 ./parallel_monte_carlo $((i*80))
+        mpiexec -n 4 ./parallel_monte_carlo $((i*100000))
         if [ $j -lt 5 ]; then
             printf "," >>./results/parallel_monte_carlo_integral # add delimiter
             printf "," >>./results/parallel_monte_carlo_timing
