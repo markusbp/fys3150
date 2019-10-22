@@ -24,29 +24,27 @@
     example:
     ./monte_carlo brute_force 10000 3
     prints: Integral is approximately 0.184826
-
 */
 
 double random_float(double lower, double upper)
 {
+  // create random float in region 0 to 1
   double temp =  (double) rand()/(RAND_MAX);
   return (lower + (upper - lower)*temp);
 }
 
-double random_radius()
-{
-  return (double) rand();
-}
 
 double random_angle()
 {
+  // create random angle between 0 and 2pi
   double temp = (double) rand()/(RAND_MAX);
   return 2*M_PI*temp;
 }
 
 double brute_force(int n, double upper, double &variance)
 {
-  double mean = 0;
+  // Brute force monte carlo integration algorithm
+  double mean = 0; // init variables
   double r1, r2, r_12, theta1, theta2, phi1, phi2;
   r1 = 0; r2 = 0; r_12 = 0; theta1 = 0; theta2 = 0; phi1 = 0; phi2 = 0;
 
@@ -54,15 +52,15 @@ double brute_force(int n, double upper, double &variance)
   double r2r2 = 0;
   double sinsin = 0;
   double alpha = 0;
-  double mean_squared = 0;
+  double mean_squared = 0; // temp variables to hold variance calculations
   double temp = 0;
-  double jacobi_determinant = 4*upper*upper*pow(M_PI, 4);
+  double jacobi_determinant = 4*upper*upper*pow(M_PI, 4); //
 
   for(int i = 0; i<n; i++)
   {
     r1 = random_float(0, upper);
     r2 = random_float(0, upper);
-    r1r1 = r1*r1;
+    r1r1 = r1*r1; // precalc to save computation
     r2r2 = r2*r2;
     theta1 = (double) random_angle()/2.0;
     theta2 = (double) random_angle()/2.0;
@@ -71,36 +69,37 @@ double brute_force(int n, double upper, double &variance)
     phi2 = random_angle();
 
     alpha = cos(theta1)*cos(theta2) + sinsin*cos(phi1 - phi2);
-    r_12 = sqrt(r1r1 + r2r2 - 2*r1*r2*alpha);
-    temp = (double) exp(-4*(r1 + r2))/r_12*r1r1*r2r2*sinsin;
-    mean  += temp;
-    mean_squared += temp*temp;
+    r_12 = sqrt(r1r1 + r2r2 - 2*r1*r2*alpha); // particle separation
+    temp = (double) exp(-4*(r1 + r2))/r_12*r1r1*r2r2*sinsin; // actual integral
+    mean  += temp; // contribution to integral
+    mean_squared += temp*temp; // contribution to variance calculation
   }
 
-  mean = (double) mean/n*jacobi_determinant;
-  variance = (double) mean_squared/n*jacobi_determinant*jacobi_determinant - mean*mean;
-  variance = variance/n;
+  mean = (double) mean/n*jacobi_determinant; // save extra multiplication for after loop
+  variance = (double) mean_squared/n*pow(jacobi_determinant, 2) - mean*mean;
+  variance = variance/n; // central limit theorem
   return mean;
 }
 
 double importance(int n, double &variance)
 {
+  // Importance sampling algorithm
   double r1, r2, r_12, theta1, theta2, phi1, phi2, mean;
   r1 = 0; r2 = 0; r_12 = 0; theta1 = 0; theta2 = 0; phi1 = 0; phi2 = 0, mean = 0;
 
-  double r1r1 = 0;
+  double r1r1 = 0; // init variables
   double r2r2 = 0;
   double sinsin = 0;
   double alpha = 0;
-  double temp = 0;
+  double temp = 0; // temp variables for computing variance
   double mean_squared = 0;
   double jacobi_determinant = 4*pow(M_PI, 4);
 
   for(int i = 0; i<n; i++)
   {
-    r1 = - log( 1 - (double) rand()/RAND_MAX );
+    r1 = - log( 1 - (double) rand()/RAND_MAX ); // sample radius from exponential distribution
     r2 = - log( 1 - (double) rand()/RAND_MAX );
-    r1r1 = r1*r1;
+    r1r1 = r1*r1; // precalc to save computation
     r2r2 = r2*r2;
     theta1 = (double) random_angle()/2.0;
     theta2 = (double) random_angle()/2.0;
@@ -111,10 +110,10 @@ double importance(int n, double &variance)
     alpha = cos(theta1)*cos(theta2) + sinsin*cos(phi1 - phi2);
     r_12 = sqrt(r1r1 + r2r2 - 2*r1*r2*alpha);
     temp = (double) 1.0/r_12*r1r1*r2r2*sinsin*exp(-3*(r1 + r2));
-    mean += temp;
-    mean_squared += temp*temp;
+    mean += temp; // contribution to integral
+    mean_squared += temp*temp; // contribution to variance
   }
-  mean = (double) mean/n*jacobi_determinant;
+  mean = (double) mean/n*jacobi_determinant; // multiply outside loop
   variance = (double) mean_squared/n*jacobi_determinant*jacobi_determinant - mean*mean;
   variance = variance/n;
   return mean;
@@ -128,6 +127,7 @@ int main(int argc, char *argv[])
 
   if(integral_type == "brute_force")
   {
+    // just do brute force monte carlo integration with n points, and infinity approx upper
     int n = atoi(argv[2]);
     double var = 0;
     double upper = atof(argv[3]);
@@ -137,6 +137,7 @@ int main(int argc, char *argv[])
   }
   else if(integral_type == "importance")
   {
+    // do importance sampling monte carlo with n points
     int n = atoi(argv[2]);
     double var = 0;
     integral = importance(n, var);
@@ -146,6 +147,7 @@ int main(int argc, char *argv[])
   }
   else if(integral_type == "profile_importance")
   {
+    // save integral and execution time for different values of n up to num_steps*stepsize
     int num_steps = atoi(argv[2]);
     int stepsize = atoi(argv[3]);
     double var = 0;
@@ -183,7 +185,7 @@ int main(int argc, char *argv[])
   }
   else if(integral_type == "profile_brute_force")
   {
-
+    // save integral and execution time for different values of n up to num_steps*stepsize
     int num_steps = atoi(argv[2]);
     int stepsize = atoi(argv[3]);
     double var = 0;

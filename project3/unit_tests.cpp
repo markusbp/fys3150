@@ -26,7 +26,4 @@ TEST_CASE( "Testing", "[Test all]" )
       double tolerance = 1e-3;
       REQUIRE(test_monte_carlo(n) < tolerance);
     }
-
-
-
 }

@@ -40,12 +40,17 @@ plt.xlabel('n')
 plt.ylabel('Integral')
 plt.show()
 
-plt.plot(n_legendre, legendre_timing, '-ko', n_laguerre, laguerre_timing)
+plt.plot(10**np.log10(n_legendre), 10**np.log10(legendre_timing), '-ko',markersize = 2)
+plt.plot(10**np.log10(n_laguerre), 10**np.log10(laguerre_timing), '-+', linewidth = 0.5)
+#print(np.polyfit(np.log10(n_legendre), np.log10(legendre_timing), 1))
+#print(np.polyfit(np.log10(n_laguerre), np.log10(laguerre_timing), 1))
+
 plt.legend(['Legendre', 'Legendre/Laguerre'], frameon = False)
-plt.xlabel('n')
-plt.ylabel('Execution Time [s]')
+plt.xlabel('$\log_{10}(n)$')
+plt.ylabel('$\log_{10}$(Execution Time) [s]')
 plt.show()
 
+# Error for Legendre/Laguerre
 legendrerror = np.log10(np.abs(exact_val - legendre_integral))
 laguerror = np.log10(np.abs(exact_val - laguerre_integral))
 
@@ -68,74 +73,20 @@ plt.ylabel('Execution Time [s]')
 plt.show()
 
 # Profile importance monte carlo without parallel processes
-timing = np.loadtxt('results/figures/monte_carlo_importance_timing', delimiter = ',')
+timing = np.loadtxt('results/monte_carlo_importance_timing', delimiter = ',')
 integral = np.loadtxt('results/monte_carlo_importance_integral', delimiter = ',')
-n_values_monte_carlo = np.loadtxt('results/figures/monte_carlo_n_values', delimiter = ',')
+n_values_monte_carlo = np.loadtxt('results/monte_carlo_n_values', delimiter = ',')
 importance_std = np.loadtxt("results/monte_carlo_importance_std", delimiter = ',')
 
-# Profiling Parallel Monte Carlo for 8 parallel processes
-timing_para = np.loadtxt('results/figures/parallel_monte_carlo_timing', delimiter = ',')
-integral_para = np.loadtxt('results/figures/parallel_monte_carlo_integral', delimiter = ',')
-n_values_para = np.loadtxt('results/figures/parallel_monte_carlo_n_values', delimiter = ',')
+
+# Profiling Parallel Monte Carlo for 4!! parallel processes
+timing_para = np.loadtxt('results/parallel_monte_carlo_timing', delimiter = ',')
+integral_para = np.loadtxt('results/parallel_monte_carlo_integral', delimiter = ',')
+n_values_para = np.loadtxt('results/parallel_monte_carlo_n_values', delimiter = ',')
 
 plt.plot(n_values_monte_carlo, timing, '.', label = 'Serial', markersize = 4)
-plt.plot(n_values_para[:, 0], np.mean(timing_para, axis = 1), '.',  label = 'Parallel', markersize = 4)
-print(np.mean(timing/np.mean(timing_para, axis = 1)), np.std(timing/np.mean(timing_para, axis = 1))/np.sqrt(len(n_values_para[:,0])))
-plt.legend(frameon = False)
-plt.xlabel('n')
-plt.ylabel('Execution time [s]')
-plt.show()
-
-'''
-timing_importance_long = np.loadtxt('results/figures/monte_carlo_importance_timing', delimiter = ',')
-poly_importance = np.polyfit(n_values_monte_carlo, timing_importance_long, 1)
-poly_para = np.polyfit(n_values_para[:,0], np.mean(timing_para, axis = 1), 1)
-
-plt.plot(n_values_monte_carlo, np.polyval(poly_importance,n_values_monte_carlo))
-plt.plot(n_values_para[:,0], np.polyval( poly_para,n_values_para[:,0]))
-plt.show()
-print(poly_importance, poly_para)
-'''
-'''
-plt.plot(n_values_monte_carlo, integral[:, 0], 'k')
-plt.plot(brute_n_values_monte_carlo, np.ones(len(brute_n_values_monte_carlo))*exact_val, '--')
-plt.legend([ 'Brute Force Monte Carlo','Importance Sampling', 'Exact Value'], frameon = False)
-plt.show()
-
-
-plt.plot(brute_n_values_monte_carlo, brute_timing)
-plt.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
-plt.plot(n_values_monte_carlo, timing, '-k')
-plt.legend(['Brute Force', 'Importance Sampling'], frameon = False)
-plt.xlabel('n')
-plt.ylabel('Execution Time [s]')
-plt.show()
-'''
-
-
-'''
-# Profile importance monte carlo without parallel processes
-timing = np.loadtxt('results/monte_carlo_importance_timing_low', delimiter = ',')
-integral = np.loadtxt('results/monte_carlo_importance_integral_low', delimiter = ',')
-n_values_monte_carlo = np.loadtxt('results/monte_carlo_n_values_low', delimiter = ',')
-
-plt.plot(n_values_monte_carlo, timing, '.', label = 'Serial', markersize = 4)
-# Profiling Parallel Monte Carlo for 8 parallel processes
-
-timing_para = np.loadtxt('results/parallel_monte_carlo_timing_low', delimiter = ',')
-integral_para = np.loadtxt('results/parallel_monte_carlo_integral_low', delimiter = ',')
-n_values_para = np.loadtxt('results/parallel_monte_carlo_n_values_low', delimiter = ',')
-
 plt.plot(n_values_para[:, 0], np.mean(timing_para, axis = 1), '.',  label = 'Parallel', markersize = 4)
 plt.legend(frameon = False)
 plt.xlabel('n')
 plt.ylabel('Execution time [s]')
 plt.show()
-
-plt.plot(n_values_monte_carlo, integral[:,0], label = 'Serial')
-plt.plot(n_values_para[:, 0], integral_para[:,0], label = 'Parallel')
-plt.legend(frameon = False)
-plt.xlabel('n')
-plt.ylabel('Error')
-plt.show()
-'''

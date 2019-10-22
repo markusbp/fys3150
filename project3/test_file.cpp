@@ -6,6 +6,8 @@
 
 double test_gauss_legendre(int n)
 {
+  // Test understanding of gauss_legendre/sanity of library function
+
   double *x, *w; // arrays for holding x-coordinates and weights, respectively
   x = new double[n];
   w = new double[n];
@@ -33,7 +35,7 @@ double test_gauss_legendre(int n)
 
 double test_gauss_laguerre(int n)
 {
-
+  // Test understanding of gauss_laguerre/sanity of library function
   double *x, *w; // arrays for holding x-coordinates and weights, respectively
   x = new double[n+1];
   w = new double[n+1];
@@ -58,6 +60,7 @@ double test_gauss_laguerre(int n)
 
 double test_monte_carlo(int n)
 {
+  // test simple monte carlo integration to verify implementation
   double integral  = 0;
   double exact_val = 1.0;
   double x = 0;
