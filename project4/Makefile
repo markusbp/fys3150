@@ -22,11 +22,11 @@ data_analysis.o: data_analysis.cpp
 ising_model.o: ising_model.cpp
 			$(CC) -c ising_model.cpp $(LIB)
 
-run_unit_tests.o: unit_tests.cpp
+unit_tests.o: unit_tests.cpp
 			$(CC) -c unit_tests.cpp $(LIB)
 
 clean:
-	rm -f core ising_model.o data_analysis.o run_unit_tests.o
+	rm -f core ising_model.o data_analysis.o run_unit_tests.o unit_tests.o
 
 #run_unit_tests: unit_tests.o
 #			$(CC) $(CXXflags) unit_tests.cpp

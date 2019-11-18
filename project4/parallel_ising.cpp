@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
   double execution_time = 0;
   // dt = (tb-ta)/(n-1) , include endpoints + 0.5f to avoid roundoff
   num_steps = (double) (t_max - t_min)/dt + 1 + 0.5f;
-
+ 
   // Initialize arrays/matrices to work with MPI reduce; Arma doesn't seem to work :'(
   all_data =  new double*[4]; // mean energy, mean mag, susceptibility, heat cap.
   final_data = new double*[4];  // stored in rows
