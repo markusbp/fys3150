@@ -29,14 +29,16 @@ TEST_CASE( "Testing 2x2 Ising Model init", "[Test Ising init]" )
 
 TEST_CASE("Testing 2x2 Ising Model sanity", "[Test Ising run]")
 {
-  double tol = 1e-3;
+  double tol = 1e-2; // tolearnce
   int size = 2;
-  int mc_cycles = 1e5;
+  int mc_cycles = 1e6;
   double temp = 2.718281828;
   IsingModel test_run(size, mc_cycles, temp);
 
   SECTION("Mean magnetization should go to zero in 2x2 case")
   {
+    test_run.metropolis(0);
+    std::cout <<"Mean mag.: " << test_run.mean_mag(mc_cycles) << std::endl;
     REQUIRE(fabs(test_run.mean_mag(mc_cycles-1)) < tol);
   }
 }

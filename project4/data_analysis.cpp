@@ -1,64 +1,93 @@
 #include <armadillo>
 #include "ising_model.hpp"
 
+// File for generating data for tasks b-c-d
+// Uses Ising Model class
+// All results printed to file, no real printout to show
+
+// usage:
+// ./analysis task -temperature
+// -temperature is only required when task = 'correlation'
+// task is either 'b', for task b, 'cd' for tasks c and d, or 'correlation'
+// correlation simulates and saves spin config for given optional -temperature
 
 // file for creating all data in task.
-void save_all(IsingModel model, std::string filename, std::string t)
-{
+void save_params(IsingModel model, std::string filename, std::string t)
+{ // helper function for saving important parameters
+  t = t.substr(0, 4);
   model.mean_abs_mag.save(filename + "_mean_abs_mag" + "_t=" + t, arma::csv_ascii);
   model.mean_mag.save(filename + "_mean_mag"+ "_t=" + t, arma::csv_ascii);
   model.mean_energy.save(filename + "_mean_energy"+ "_t=" + t, arma::csv_ascii);
   model.heat_capacity.save(filename + "_heatcap"+ "_t=" + t, arma::csv_ascii);
   model.susceptibility.save(filename + "_susceptibility"+ "_t=" + t, arma::csv_ascii);
-  model.accepted_flips.save(filename + "_accepted_flips"+ "_t=" + t, arma::csv_ascii);
 }
 
 void save_en_mag(IsingModel model, std::string filename, std::string t)
-{
+{ // helper function for saving important parameters
+  t = t.substr(0, 4);
   model.mean_abs_mag.save(filename + "_mean_abs_mag" + "_t=" + t, arma::csv_ascii);
   model.mean_energy.save(filename + "_mean_energy"+ "_t=" + t, arma::csv_ascii);
+  model.accepted_flips.save(filename + "_accepted_flips" + "_t=" + t, arma::csv_ascii);
+  model.all_energies.save(filename + "_all_energies" + "_t=" + t, arma::csv_ascii);
 }
 
 int main(int argc, char *argv[])
 {
-  // 2x2, task 4b)
+  std::string task = argv[1];
+  std::string temp;
 
-  int l = 2;
-  int n = 1e6;
-  double t = 1.0;
-  /*
-  IsingModel model(l, n, t); //  l, n, temp
-  model.metropolis(0);
-  save_all(model, "./results/2x2/ordered", "1.0");
+  int l;
+  int n;
+  double t;
 
-  model.set_random_spin_config(0);
-  model.metropolis(0);
-  save_all(model, "./results/2x2/random", "1.0");
-  */
-  // 20x20
-  l = 20;
-  n = 1e6;
-  t = 2.3;
-  IsingModel model20(l, n, t); //  l, n, temp
+  if(task == "b")
+  {  // 2x2 lattice, task 4b)
+    l = 2; // grid size, 2x2
+    n = 1e5; // number of monte carlo cycles
+    t = 1.0; // temperature, first run
+    temp = std::to_string(t);
+    IsingModel model(l, n, t); //  l, n, temp
+    model.metropolis(0); // run simulation with only one process.
+    save_params(model, "./results/2x2/", temp);
+  }
+  if(task == "cd")
+  {
+    // Runs Ising Model and creates data for tasks 4c and d,
+    l = 20; // 20x20 lattice
+    n = 1e6; // mc cycles
+    t = 1.0; // initial temp
+    temp = std::to_string(t);
 
-  model20.metropolis(0);
-  model20.all_energies.save("./results/20x20/all_energies", arma::csv_ascii);
+    IsingModel model(l, n, t); // instantiate model
+    model.metropolis(0); // run metropolis algo for n mc cycles
+    save_en_mag(model, "./results/20x20/ordered", temp); // save relevant params
 
-  /*
-  save_all(model20, "./results/20x20/ordered", "1.0");
+    model.set_random_spin_config(0); // Do the same for random spin config; reset
+    model.metropolis(0);
+    save_en_mag(model, "./results/20x20/random", temp);
 
-  model20.set_random_spin_config(0);
-  model20.metropolis(0);
-  save_all(model20, "./results/20x20/random", "1.0");
+    t = 2.4;
+    model.set_temperature(t); // Perform same calculations for temperature 2.4
+    temp = std::to_string(t);
 
-  model20.set_temperature(2.4); // set temp and reset values
+    model.set_ordered_spin_config("all_up");
+    model.metropolis(0);
+    save_en_mag(model, "./results/20x20/ordered", temp);
 
-  model20.metropolis(0);
-  save_all(model20, "./results/20x20/ordered", "2.4");
-
-  model20.set_random_spin_config(0);
-  model20.metropolis(0);
-  save_all(model20, "./results/20x20/random", "2.4");
-  */
+    model.set_random_spin_config(0);
+    model.metropolis(0);
+    save_en_mag(model, "./results/20x20/random", temp);
+  }
+  if (task == "correlation")
+  {
+    l = 100;
+    n = 1e5;
+    t = atof(argv[2]);
+    IsingModel model(l, n, t); // instantiate model
+    model.set_temperature(t);
+    model.set_random_spin_config(0);
+    model.metropolis(0); //simulate and save only spin configuration
+    model.spins.save("./results/spin/spins_t=" + std::to_string(t), arma::csv_ascii);
+  }
   return 0;
 }

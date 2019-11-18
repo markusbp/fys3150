@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 
   if(process_rank == 0) // only print if master node
   {
-    // Append result to file, works in conjunction wit bash script profile_parallel_mc
+    // Append result to file, works in conjunction with bash script profile_parallel_mc
     integral = total_integral;
     execution_time = stop - start;
     std::cout << "n = " <<  n << std::endl;

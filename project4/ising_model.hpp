@@ -4,9 +4,8 @@
 class IsingModel
 {
   private:
-    double kb; // Boltzmann constant, m2kg2s-2K-1
-    double beta;
-    double random_lattice_site(){return 0;} // fetch random site on lattice
+    double kb; // Boltzmann constant
+    double beta; // inverse temperature
     double boltzmann(double energy); // boltzmann factor
     double energy_difference(int x, int y); // calculate energy difference
     int boundary(int r); // periodic boundary conditions
@@ -32,10 +31,10 @@ class IsingModel
     arma::vec all_energies;
     arma::vec accepted_flips;
     void metropolis(int seed); // method for running step of Metropolis algorithm
-    void set_ordered_spin_config(std::string config);
-    void set_random_spin_config(int seed);
-    void set_temperature(double t);
-    IsingModel(int l, int n, double t);
+    void set_ordered_spin_config(std::string config); // helper methods for setting
+    void set_random_spin_config(int seed); // spin config
+    void set_temperature(double t); // or temperature
+    IsingModel(int l, int n, double t); // constructor
 };
 
 #endif
