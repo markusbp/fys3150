@@ -17,13 +17,13 @@ run_unit_tests: unit_tests.o ising_model.o
 			$(CC) $(CXXflags) run_unit_tests unit_tests.o ising_model.o  $(LIB)
 
 data_analysis.o: data_analysis.cpp
-			$(CC) -c data_analysis.cpp $(LIB)
+			$(CC) -c -O2 data_analysis.cpp $(LIB)
 
 ising_model.o: ising_model.cpp
-			$(CC) -c ising_model.cpp $(LIB)
+			$(CC) -c -O2 ising_model.cpp $(LIB)
 
 unit_tests.o: unit_tests.cpp
-			$(CC) -c unit_tests.cpp $(LIB)
+			$(CC) -c -O2 unit_tests.cpp $(LIB)
 
 clean:
 	rm -f core ising_model.o data_analysis.o run_unit_tests.o unit_tests.o

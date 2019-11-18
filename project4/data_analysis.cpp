@@ -65,6 +65,7 @@ int main(int argc, char *argv[])
     model.set_random_spin_config(0); // Do the same for random spin config; reset
     model.metropolis(0);
     save_en_mag(model, "./results/20x20/random", temp);
+    std::cout << "T = " << t << " heatcap: " << model.heat_capacity(n-1) << std::endl;
 
     t = 2.4;
     model.set_temperature(t); // Perform same calculations for temperature 2.4
@@ -77,6 +78,7 @@ int main(int argc, char *argv[])
     model.set_random_spin_config(0);
     model.metropolis(0);
     save_en_mag(model, "./results/20x20/random", temp);
+    std::cout << "T = " << t << " heatcap: " << model.heat_capacity(n-1) << std::endl;
   }
   if (task == "correlation")
   {

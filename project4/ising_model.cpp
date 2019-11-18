@@ -62,6 +62,8 @@ void IsingModel::initialize_parameters()
 
 int IsingModel::boundary(int r)
 { // Periodic boundary conditions
+  // Here I could have just "stolen" the modulo construct from the course
+  // program, but I felt that would be a bit of a cheat :)
   int position = r;
   if (r == lattice_size){position = 0;}
   else if(r == -1){position = lattice_size-1;}

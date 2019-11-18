@@ -9,7 +9,7 @@ plt.rcParams['mathtext.fontset'] = 'stix'
 plt.rcParams['font.family'] = 'STIXGeneral'
 plt.rcParams.update({'font.size': 14})
 
-'''
+
 # Task 4b)
 ############################################################################
 temp = 1.0
@@ -18,6 +18,8 @@ analytical_abs_mag = 8/partition_func*(np.exp(8/temp) +2)/4
 analytical_mean_energy = -32/partition_func*np.sinh(8/temp)/4
 analytical_sus = 32/temp/partition_func*(np.exp(8/temp)+ 1)/4
 analytical_heatcap = 256/(temp**2*partition_func**2)*(partition_func*np.cosh(8/temp) - 4*np.sinh(8/temp)**2)/4
+
+print(analytical_abs_mag, analytical_mean_energy, analytical_sus, analytical_heatcap)
 
 results = './results/2x2/'
 
@@ -29,13 +31,14 @@ heatcap = np.loadtxt(results + '_heatcap_t=1.00')
 mc_cycles = len(mean_mag)
 n_vals = np.arange(mc_cycles)
 fig, ax = plt.subplots(4, 1)
-mag_error = np.log10(np.abs((mean_mag - analytical_abs_mag)/analytical_abs_mag))
-ax[0].plot(n_vals, mag_error, 'slategrey', linewidth = 1)
-ax[0].legend(['$\langle E \\rangle /J $'], frameon = False)
 
 en_error = np.log10(np.abs((mean_en - analytical_mean_energy)/analytical_mean_energy))
-ax[1].plot(n_vals, en_error,'firebrick', linewidth = 1)
-ax[1].legend(['$\langle |M| \\rangle$'], frameon = False)
+ax[0].plot(n_vals, en_error,'firebrick', linewidth = 1)
+ax[0].legend(['$\langle E \\rangle/J$'], frameon = False)
+
+mag_error = np.log10(np.abs((mean_mag - analytical_abs_mag)/analytical_abs_mag))
+ax[1].plot(n_vals, mag_error, 'slategrey', linewidth = 1)
+ax[1].legend(['$\langle |M| \\rangle $'], frameon = False)
 
 sus_error = np.log10(np.abs((susc - analytical_sus)/analytical_sus))
 ax[2].plot(n_vals, sus_error, 'steelblue', linewidth = 1)
@@ -48,9 +51,8 @@ plt.tight_layout()
 plt.xlabel('MC Cycles', fontsize = 12)
 fig.text(0.025,0.5, "$\log_{10}$ Absolute Relative Error", ha="center", va="center", rotation=90)
 plt.show()
-'''
+
 ##########################################################################
-'''
 
 # Task 4c, energy/magnetization PER SPIN!
 # t = 1.0
@@ -125,8 +127,7 @@ fig.text(0.5, 0.005, 'MC Cycles', ha='center')
 plt.tight_layout()
 #fig.text(0.04, 0.5, 'common Y', va='center', rotation='vertical')
 plt.show()
-'''
-'''
+
 accept_r_10 = np.genfromtxt('./results/20x20/random_accepted_flips_t=1.00', delimiter = ',')
 accept_o_10 = np.genfromtxt('./results/20x20/ordered_accepted_flips_t=1.00', delimiter = ',')
 accept_r_24 = np.genfromtxt('./results/20x20/random_accepted_flips_t=2.40', delimiter = ',')
@@ -137,20 +138,29 @@ plt.loglog(n_values, accept_r_10, '--', color = 'steelblue', linewidth = 1)
 plt.loglog(n_values, accept_o_10, color = 'steelblue', linewidth = 1)
 plt.loglog(n_values, accept_r_24, '--', color = 'tomato', linewidth = 1)
 plt.loglog(n_values, accept_o_24, color = 'tomato', linewidth = 1)
-plt.legend(['Random,  $\hat{T} = 1.0$','Ordered,  $\hat{T} = 1.0$','Random,  $\hat{T} = 2.4$', 'Ordered,  $\hat{T} = 2.4$'],frameon=  False, fontsize = 12)
+plt.legend(['Random,  $\hat{T} = 1.0$','Ordered,  $\hat{T} = 1.0$','Random,  $\hat{T} = 2.4$', 'Ordered,  $\hat{T} = 2.4$'],frameon=  False, fontsize = 11)
+plt.xlabel('MC Cycles', fontsize = 12)
+plt.ylabel('Accepted Spin Flips', fontsize =12)
 plt.show()
-'''
-'''
+
+
+plt.plot(np.log10(n_values), np.log10(accept_o_10), color = 'steelblue', linewidth = 1)
+plt.show()
+
+
 # Task d
 ################################################################################
 
 ll = 20*20
-energies = np.loadtxt('./results/20x20/ordered_all_energies_t=1.00', delimiter = ',')[1000:]/ll
-bins = np.arange(np.min(energies), np.max(energies), 2/ll) # Each energy gets bin
+energies = np.loadtxt('./results/20x20/ordered_all_energies_t=1.00', delimiter = ',')[1000:]
+bins = np.arange(np.min(energies), np.max(energies), 2)
 counts, bins = np.histogram(energies,bins)
+bins = bins/ll
 plt.hist(bins[:-1], bins, weights=counts/len(energies), color='tab:blue') # Convert to probability
+
 energies = np.loadtxt('./results/20x20/random_all_energies_t=2.40', delimiter = ',')[2000:]/ll
-bins = np.arange(np.min(energies), np.max(energies), 2.5/ll) # Each energy gets bin
+
+bins = np.arange(np.min(energies), np.max(energies), 2.5/ll)
 counts, bins = np.histogram(energies,bins)
 plt.hist(bins[:-1], bins, weights=counts/len(energies), color='k') # Convert to probability
 plt.legend(['$\hat{T} = 1.0$', '$\hat{T} = 2.4$'], frameon = False)
@@ -160,8 +170,6 @@ plt.yscale('log')
 plt.show()
 
 
-'''
-'''
 # Task e/f
 ##############################################################################
 temp_range = np.arange(2, 2.6, 0.025)
@@ -187,22 +195,21 @@ for i, yl in zip(range(4), ylab):
 tl = [temp_range[np.argmax(t[3])] for t in [f2, f3, f4]]
 poly = np.polyfit([60, 80,100], tl, 1)
 print('Estimated critical temperature: ', poly[1])
-'''
 
-cm = 'tab20b'
+cm = 'bone'
 test = np.genfromtxt('./results/spin/spins_t=1.00', delimiter = ',') # n = 10**5
-plt.imshow(test, cmap = cm)
+plt.imshow(test, cmap = cm, interpolation = 'bilinear')
 plt.show()
 test = np.genfromtxt('./results/spin/spins_t=2.00', delimiter = ',')
-plt.imshow(test, cmap = cm)
+plt.imshow(test, cmap = cm, interpolation = 'bilinear')
 plt.show()
 test = np.genfromtxt('./results/spin/spins_t=2.269', delimiter = ',')
-plt.imshow(test, cmap = cm)
+plt.imshow(test, cmap = cm, interpolation = 'bilinear')
 plt.show()
 
 test = np.genfromtxt('./results/spin/spins_t=2.30', delimiter = ',')
-plt.imshow(test, cmap = cm)
+plt.imshow(test, cmap = cm, interpolation = 'bilinear')
 plt.show()
 test = np.genfromtxt('./results/spin/spins_t=2.50', delimiter = ',')
-plt.imshow(test, cmap = cm)
+plt.imshow(test, cmap = cm, interpolation = 'bilinear')
 plt.show()
