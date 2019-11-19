@@ -9,7 +9,6 @@ plt.rcParams['mathtext.fontset'] = 'stix'
 plt.rcParams['font.family'] = 'STIXGeneral'
 plt.rcParams.update({'font.size': 14})
 
-
 # Task 4b)
 ############################################################################
 temp = 1.0
@@ -19,7 +18,7 @@ analytical_mean_energy = -32/partition_func*np.sinh(8/temp)/4
 analytical_sus = 32/temp/partition_func*(np.exp(8/temp)+ 1)/4
 analytical_heatcap = 256/(temp**2*partition_func**2)*(partition_func*np.cosh(8/temp) - 4*np.sinh(8/temp)**2)/4
 
-print(analytical_abs_mag, analytical_mean_energy, analytical_sus, analytical_heatcap)
+print('Analytical vals:', analytical_abs_mag, analytical_mean_energy, analytical_sus, analytical_heatcap)
 
 results = './results/2x2/'
 
@@ -143,25 +142,21 @@ plt.xlabel('MC Cycles', fontsize = 12)
 plt.ylabel('Accepted Spin Flips', fontsize =12)
 plt.show()
 
-
-plt.plot(np.log10(n_values), np.log10(accept_o_10), color = 'steelblue', linewidth = 1)
-plt.show()
-
-
 # Task d
 ################################################################################
 
 ll = 20*20
 energies = np.loadtxt('./results/20x20/ordered_all_energies_t=1.00', delimiter = ',')[1000:]
-bins = np.arange(np.min(energies), np.max(energies), 2)
+bins = np.arange(np.min(energies), np.max(energies), 1)
 counts, bins = np.histogram(energies,bins)
 bins = bins/ll
 plt.hist(bins[:-1], bins, weights=counts/len(energies), color='tab:blue') # Convert to probability
 
-energies = np.loadtxt('./results/20x20/random_all_energies_t=2.40', delimiter = ',')[2000:]/ll
+energies = np.loadtxt('./results/20x20/random_all_energies_t=2.40', delimiter = ',')[2000:]
 
-bins = np.arange(np.min(energies), np.max(energies), 2.5/ll)
+bins = np.arange(np.min(energies), np.max(energies), 1)
 counts, bins = np.histogram(energies,bins)
+bins = bins/ll
 plt.hist(bins[:-1], bins, weights=counts/len(energies), color='k') # Convert to probability
 plt.legend(['$\hat{T} = 1.0$', '$\hat{T} = 2.4$'], frameon = False)
 plt.xlabel('E/J', fontsize = 14)
@@ -173,9 +168,9 @@ plt.show()
 # Task e/f
 ##############################################################################
 temp_range = np.arange(2, 2.6, 0.025)
+critical_temps = np.zeros((2, 4)) # one for sus., one for heatcap.
 
 ylab = ['$\langle E \\rangle /(lJ) $' ,'$ \langle |M| \\rangle /l $' ,'$(J \chi)/l$' ,'$C_V/(lk_B)$' ]
-
 ylab = ['$\langle E \\rangle /J $' ,'$ \langle |M| \\rangle $', '$\hat{\chi}$', '$\hat{C}_V$']
 for i, yl in zip(range(4), ylab):
     f1 = np.genfromtxt(open("./results/parallel/40x40", "rb"), delimiter=",")
@@ -192,10 +187,23 @@ for i, yl in zip(range(4), ylab):
     plt.tight_layout()
     plt.show()
 
-tl = [temp_range[np.argmax(t[3])] for t in [f2, f3, f4]]
-poly = np.polyfit([60, 80,100], tl, 1)
-print('Estimated critical temperature: ', poly[1])
+    if i > 1:
+        critical_temps[i - 2] = np.array([temp_range[np.argmax(t[i])] for t in [f1, f2, f3, f4]])
 
+for i in range(2):
+    poly, covv = np.polyfit(np.array([40, 60, 80,100]), critical_temps[i], 1, cov = True)
+    print(critical_temps[i])
+    print('Estimated critical temperature: ', poly[1])
+    print(np.sqrt(covv))
+
+avg = np.mean(critical_temps, axis = 0)
+poly, covv = np.polyfit([40, 60, 80,100], avg, 1, cov = True)
+print('Estimated critical temperature: ', poly[1])
+print('Error: ', np.sqrt(covv))
+# print(np.sqrt(covv) for error estimate)
+
+###############################################################################
+# Didn't make it into report :((
 cm = 'bone'
 test = np.genfromtxt('./results/spin/spins_t=1.00', delimiter = ',') # n = 10**5
 plt.imshow(test, cmap = cm, interpolation = 'bilinear')

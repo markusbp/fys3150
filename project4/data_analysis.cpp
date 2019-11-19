@@ -10,6 +10,7 @@
 // -temperature is only required when task = 'correlation'
 // task is either 'b', for task b, 'cd' for tasks c and d, or 'correlation'
 // correlation simulates and saves spin config for given optional -temperature
+// b and cd must be run separately to generate data for plotting
 
 // file for creating all data in task.
 void save_params(IsingModel model, std::string filename, std::string t)

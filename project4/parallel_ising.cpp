@@ -14,6 +14,8 @@
 // n is the number of MC cycles/sweeps
 // dt is the step in temperature
 
+// run this for l = 40, then 60, then 80, then 100 using dt = 0.025 to plot. (takes forever)
+
 int main(int argc, char *argv[])
 {
   int num_processes = 0; // arguments for MPI, number of processes
