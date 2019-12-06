@@ -4,19 +4,17 @@
 #include <armadillo>
 #include "quantum_dots.hpp"
 
-QuantumDots::QuantumDots(int n, double alpha, double beta, double freq, int proc):
+QuantumDots::QuantumDots(int n, double alpha, double freq, int proc):
    averages(n+1, 4),
    positions(n+1, 6)
     {
-      a = alpha;
-      b = beta;
+      varparam = alpha;
       seed = proc;
       mc_cycles = n;
       omega = freq;
-      stepsize = (double) sqrt(log(2.0)/(2.0*a*omega));
+      stepsize = (double) sqrt(log(2.0)/(2.0*varparam*omega));
       averages.fill(0);
       positions.fill(0);
-      std::cout<< stepsize<<std::endl;
     }
 
 void QuantumDots::metropolis()
@@ -39,9 +37,6 @@ void QuantumDots::metropolis()
   }
 
   r = arma::norm(positions.row(0));
-  std::cout << stepsize << " " << omega << " " << a << " " << r << " " << positions.row(0) << std::endl;
-
-
   r12 = particle_separation(positions.row(0));
 
   averages(0, 0) = local_energy(r, r12);
@@ -93,15 +88,36 @@ double QuantumDots::particle_separation(arma::rowvec pos)
 
 double QuantumDots::transition_prob(double r, double rp)
 {
-  return exp(-a*omega*(rp*rp - r*r));
+  return exp(-varparam*omega*(rp*rp - r*r));
 }
 
 double QuantumDots::local_energy(double r, double r12)
 {
-  return 0.5*omega*omega*r*r*(1-a*a) + 3*a*omega + 1.0/r12;
+  return 0.5*omega*omega*r*r*(1-varparam*varparam) + 3*varparam*omega + 1.0/r12;
 }
 
-void QuantumDots::grid_search()
-{ 
+void QuantumDots::grid_search(int steps, double step)
+{
+  double min_en  = 1e6;
+  double min_par = 0;
+  averages.fill(0);
+  positions.fill(0);
+  for(int i = 0; i<steps; i++)
+  {
+    stepsize = (double) sqrt(log(2.0)/(2.0*varparam*omega));
+    metropolis();
+
+    if(averages(mc_cycles, 0) < min_en)
+    {
+      min_en = averages(mc_cycles,0);
+      min_par = varparam;
+    }
+
+    averages.fill(0);
+    positions.fill(0);
+    // reset
+    varparam += step;
+  }
+  std::cout << min_par << " En: "<< min_en << std::endl;
 
 }
