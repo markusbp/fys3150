@@ -42,5 +42,3 @@ TEST_CASE("Testing 2x2 Ising Model sanity", "[Test Ising run]")
     REQUIRE(fabs(test_run.mean_mag(mc_cycles-1)) < tol);
   }
 }
-
-// TODO: Create more unit tests! Impl. heat-cap, magsep.,
