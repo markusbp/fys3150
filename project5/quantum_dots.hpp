@@ -6,10 +6,12 @@ class QuantumDots
   protected:
     int seed;
     double omega;
+    double r12;
     void finalize();
     double particle_separation(arma::rowvec pos);
-    virtual double transition_prob(double r1, double r2);
-    virtual double local_energy(double r1, double r12);
+    virtual double transition_prob(double r1, double r2) = 0;
+    virtual double local_energy(double r1, double r12) = 0;
+    arma::rowvec trial_position; //x1, x2, y1, y2, z1, z2
   public:
     int mc_cycles;
     double varparam;
@@ -32,10 +34,10 @@ class Psi1: public QuantumDots
 class Psi2: public QuantumDots
 {
   protected:
-    double a;
     double transition_prob(double r1, double r2);
     double local_energy(double r1, double r12);
   public:
+    double a; // a is public do to better grid search
     Psi2(int n, double alpha, double beta, double freq, int seed);
 };
 

@@ -6,7 +6,8 @@
 
 QuantumDots::QuantumDots(int n, double alpha, double freq, int proc):
    averages(n+1, 4),
-   positions(n+1, 6)
+   positions(n+1, 6),
+   trial_position(6)
     {
       varparam = alpha;
       seed = proc;
@@ -25,10 +26,10 @@ void QuantumDots::metropolis()
   double s = 0;
   double r = 0;
   double rp = 0;
-  double r12 = 0;
   double accepted_moves = 0;
   double stepsize = (double) sqrt(log(2.0)/(2.0*varparam*omega));
-  arma::rowvec trial_position(6, arma::fill::zeros); //x1, x2, y1, y2, z1, z2
+
+  reset(); // ensure all matrices are emptied
 
   // initialize positions on unit sphere
   for(int k = 0; k < 6; k++)
@@ -69,13 +70,14 @@ void QuantumDots::metropolis()
     }
   }
   finalize();
-  //std::cout << (double) accepted_moves/mc_cycles << std::endl;
+  std::cout << (double) accepted_moves/mc_cycles << std::endl;
 }
 
 void QuantumDots::reset()
 {
   averages.fill(0);
   positions.fill(0);
+  trial_position.fill(0);
 }
 
 void QuantumDots::finalize()
@@ -87,16 +89,12 @@ void QuantumDots::finalize()
   }
 }
 
-// Virtual methods to be overwritten
-double QuantumDots::transition_prob(double r, double rp){}
-double QuantumDots::local_energy(double r, double r12){}
-
 double QuantumDots::particle_separation(arma::rowvec pos)
 {
   return arma::norm(pos.cols(0,2) - pos.cols(3,5));
 }
 
-// Psi1 only needs the Quantumdot constructor
+// Psi1 only needs the QuantumDots constructor
 Psi1::Psi1(int n, double alpha, double freq, int seed):
           QuantumDots(n, alpha, freq, seed){}
 
@@ -119,13 +117,15 @@ Psi2::Psi2(int n, double alpha, double beta , double freq, int seed):
 
 double Psi2::transition_prob(double r, double rp)
 {
-  // Big badness :(
-  return exp(-a*omega*(rp*rp - r*r));
+  double r12p = particle_separation(trial_position);
+  double frac = (double) r12p/(1+varparam*r12p) - (double) r12/(1+varparam*r12);
+  return exp(-a*omega*(rp*rp - r*r) + frac);
 }
 
 double Psi2::local_energy(double r, double r12)
 {
-  double frac = 1.0/(2.0*(1.0+varparam*r12)*(1.0+varparam*r12));
-  double e1 = 0.5*omega*omega*r*r*(1-a*a) + 3*a*omega + 1.0/r12 +
-  return e1 + frac*(a*omega*r12 -frac - 2.0/r12 + varparam*2.0/(1+varparam*r12));
+  double factor = 1.0+varparam*r12;
+  double frac = 1.0/(2.0*factor*factor);
+  double e1 = 0.5*omega*omega*r*r*(1-a*a) + 3*a*omega + 1.0/r12;
+  return e1 + frac*(a*omega*r12 - frac - 2.0/r12 + varparam*2.0/factor);
 }
