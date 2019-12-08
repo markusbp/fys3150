@@ -12,9 +12,7 @@ QuantumDots::QuantumDots(int n, double alpha, double freq, int proc):
       seed = proc;
       mc_cycles = n;
       omega = freq;
-      stepsize = (double) sqrt(log(2.0)/(2.0*varparam*omega));
-      averages.fill(0);
-      positions.fill(0);
+      reset();
     }
 
 void QuantumDots::metropolis()
@@ -29,8 +27,10 @@ void QuantumDots::metropolis()
   double rp = 0;
   double r12 = 0;
   double accepted_moves = 0;
+  double stepsize = (double) sqrt(log(2.0)/(2.0*varparam*omega));
   arma::rowvec trial_position(6, arma::fill::zeros); //x1, x2, y1, y2, z1, z2
-  // initialize positions
+
+  // initialize positions on unit sphere
   for(int k = 0; k < 6; k++)
   {
     positions(0, k) = 2*float_dist(generator) - 1;
@@ -69,7 +69,13 @@ void QuantumDots::metropolis()
     }
   }
   finalize();
-  std::cout << (double) accepted_moves/mc_cycles << std::endl;
+  //std::cout << (double) accepted_moves/mc_cycles << std::endl;
+}
+
+void QuantumDots::reset()
+{
+  averages.fill(0);
+  positions.fill(0);
 }
 
 void QuantumDots::finalize()
@@ -81,43 +87,45 @@ void QuantumDots::finalize()
   }
 }
 
+// Virtual methods to be overwritten
+double QuantumDots::transition_prob(double r, double rp){}
+double QuantumDots::local_energy(double r, double r12){}
+
 double QuantumDots::particle_separation(arma::rowvec pos)
 {
   return arma::norm(pos.cols(0,2) - pos.cols(3,5));
 }
 
-double QuantumDots::transition_prob(double r, double rp)
+// Psi1 only needs the Quantumdot constructor
+Psi1::Psi1(int n, double alpha, double freq, int seed):
+          QuantumDots(n, alpha, freq, seed){}
+
+double Psi1::transition_prob(double r, double rp)
 {
   return exp(-varparam*omega*(rp*rp - r*r));
 }
 
-double QuantumDots::local_energy(double r, double r12)
+double Psi1::local_energy(double r, double r12)
 {
   return 0.5*omega*omega*r*r*(1-varparam*varparam) + 3*varparam*omega + 1.0/r12;
 }
 
-void QuantumDots::grid_search(int steps, double step)
+Psi2::Psi2(int n, double alpha, double beta , double freq, int seed):
+      QuantumDots(n, alpha, freq, seed)
 {
-  double min_en  = 1e6;
-  double min_par = 0;
-  averages.fill(0);
-  positions.fill(0);
-  for(int i = 0; i<steps; i++)
-  {
-    stepsize = (double) sqrt(log(2.0)/(2.0*varparam*omega));
-    metropolis();
+  a = alpha;
+  varparam = beta;
+}
 
-    if(averages(mc_cycles, 0) < min_en)
-    {
-      min_en = averages(mc_cycles,0);
-      min_par = varparam;
-    }
+double Psi2::transition_prob(double r, double rp)
+{
+  // Big badness :(
+  return exp(-a*omega*(rp*rp - r*r));
+}
 
-    averages.fill(0);
-    positions.fill(0);
-    // reset
-    varparam += step;
-  }
-  std::cout << min_par << " En: "<< min_en << std::endl;
-
+double Psi2::local_energy(double r, double r12)
+{
+  double frac = 1.0/(2.0*(1.0+varparam*r12)*(1.0+varparam*r12));
+  double e1 = 0.5*omega*omega*r*r*(1-a*a) + 3*a*omega + 1.0/r12 +
+  return e1 + frac*(a*omega*r12 -frac - 2.0/r12 + varparam*2.0/(1+varparam*r12));
 }
