@@ -12,13 +12,13 @@ int main(int argc, char *argv[])
   double time_start = 0;
   double execution_time = 0;
 
-  int n = 5000000;
+  int n = 2000000;
   int col = 0;
-  int grid_length = 100;
+  int grid_length = atoi(argv[1]);
+  double grid_step = atof(argv[2]);
+  double alpha_init = atof(argv[3]);
+  double beta_init = atof(argv[4]);
   double freq = 1;
-  double grid_step = 0.02;
-  double beta_init = 0.01;
-  double alpha_init = 0.01;
   arma::mat variational_params = arma::zeros(2, grid_length);
 
   // Initialize arrays/matrices to work with MPI reduce
@@ -31,14 +31,15 @@ int main(int argc, char *argv[])
   {
     all_energies[i] = new double[grid_length];
     trial_energies[i] = new double[grid_length];
-    variational_params(0, i) = (i+1)*grid_step;
-    variational_params(1, i) = (i+1)*grid_step;
+    variational_params(0, i) = alpha_init + (i+1)*grid_step;
+    variational_params(1, i) = beta_init + (i+1)*grid_step;
     for (int j = 0; j < grid_length; j++)
     {
       trial_energies[i][j] = 0; // initialize all elements to zero
       all_energies[i][j] = 0; // initialize all elements to zero
     }
   }
+
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &num_processes);
