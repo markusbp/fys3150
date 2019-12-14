@@ -5,7 +5,7 @@
 #include "quantum_dots.hpp"
 
 QuantumDots::QuantumDots(int n, double alpha, double freq, int proc):
-   averages(n+1, 5),
+   averages(n+1, 7),
    positions(n+1, 6),
    trial_position(6)
     {
@@ -83,10 +83,15 @@ void QuantumDots::reset()
 void QuantumDots::finalize()
 {
   arma::vec n_values = arma::regspace(1, mc_cycles + 1);
-
-  averages.col(0) = averages.col(2) + averages.col(3); // Etr = Ek + Ep
-  averages.col(1) = arma::square(averages.col(0));
-  for(int i = 0; i < 5; i++)
+  arma::vec separation = 1.0/averages.col(4);
+  // Non-interacting energy: Ek + Ep_noninteracting
+  averages.col(5) = averages.col(2) + averages.col(3); // non-interacting
+  averages.col(6) = averages.col(3); // save non-interacting potential
+  // full energy = Ek + Ep_noninteracting + 1.0/r12
+  averages.col(0) = averages.col(5) + separation; // full energy
+  averages.col(3) = averages.col(3) + separation; // ep with interaction
+  averages.col(1) = arma::square(averages.col(0)); // squared energy
+  for(int i = 0; i < 7; i++)
   {
     averages.col(i) = arma::cumsum(averages.col(i))/n_values;
   }
@@ -108,11 +113,11 @@ double Psi1::transition_prob(double r, double rp)
 
 void Psi1::update_energies(double r, double r12, int cycle)
 {
-  double factor = 0.5*omega*omega*r*r;
-  double ek = -factor*varparam*varparam + 3.0*varparam*omega;
-  double ep = factor + 1.0/r12;
+  double ep_nonint = 0.5*omega*omega*r*r;
+  double ek = -ep_nonint*varparam*varparam + 3.0*varparam*omega;
+  //double ep_nonint = factor;// + 1.0/r12;
   averages(cycle, 2) = ek;
-  averages(cycle, 3) = ep;
+  averages(cycle, 3) = ep_nonint;
 }
 
 Psi2::Psi2(int n, double alpha, double beta , double freq, int seed):
@@ -131,14 +136,19 @@ double Psi2::transition_prob(double r, double rp)
 
 void Psi2::update_energies(double r, double r12, int cycle)
 {
-  double temp = 0.5*omega*omega*r*r;
-  double ek1 = -temp*a*a + 3.0*a*omega;
+  double ep_nonint = 0.5*omega*omega*r*r;
+  double ek1 = -ep_nonint*a*a + 3.0*a*omega;
   double factor = 1.0 + varparam*r12;
   double frac = 1.0/(2.0*factor*factor);
   double ek = ek1 + frac*(a*omega*r12 - frac - 2.0/r12 + varparam*2.0/factor);
-  double ep = temp + 1.0/r12;
+  //double ep_nonint = temp; // + 1.0/r12;
   averages(cycle, 2) = ek;
-  averages(cycle, 3) = ep;
+  averages(cycle, 3) = ep_nonint;
+}
+
+void Psi2::set_omega(double freq)
+{
+  omega = freq;
 }
 
 /*
@@ -149,8 +159,6 @@ double Psi2::local_energy(double r, double r12)
   double e1 = 0.5*omega*omega*r*r*(1-a*a) + 3*a*omega + 1.0/r12;
   return e1 + frac*(a*omega*r12 - frac - 2.0/r12 + varparam*2.0/factor);
 }
-
-
 
 double Psi1::local_ep(double r, double r12)
 {

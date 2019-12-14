@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
   Psi2 trial2(n, alpha, beta, freq, 0); // n, alpha, omega, seed
   trial2.metropolis();
 
-  trial2.averages.save("results/psi2_run", arma::csv_ascii);
+  std::string freqname(argv[2]);
+  trial2.averages.save("results/psi2_opt_w=" + freqname, arma::csv_ascii);
   return 0;
 }

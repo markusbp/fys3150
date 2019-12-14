@@ -39,6 +39,7 @@ class Psi2: public QuantumDots
     void update_energies(double r1, double r12, int cycle);
   public:
     double a; // a is public do to better grid search
+    void set_omega(double freq); // change omega without redoing all classes :)
     Psi2(int n, double alpha, double beta, double freq, int seed);
 };
 
