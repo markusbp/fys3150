@@ -6,11 +6,11 @@ LIB = -larmadillo
 
 all: run_simulation run_unit_tests virial search_psi1 search_psi2
 
-run_simulation: simulate_qd.cpp quantum_dots.cpp
-		mpicxx -O2 -o run_simulation simulate_qd.cpp quantum_dots.cpp $(LIB)
+search_psi2: search_psi2.cpp quantum_dots.cpp
+		mpicxx -O2 -o search_psi2 search_psi2.cpp quantum_dots.cpp $(LIB)
 
-run_unit_tests: unit_tests.o
-		$(CC) $(CXXflags) run_unit_tests unit_tests.o $(LIB)
+run_unit_tests: unit_tests.o quantum_dots.o
+		$(CC) $(CXXflags) run_unit_tests unit_tests.o quantum_dots.o $(LIB)
 
 virial: virial.o quantum_dots.o
 		$(CC) $(CXXflags) virial virial.o quantum_dots.o $(LIB)
@@ -18,8 +18,8 @@ virial: virial.o quantum_dots.o
 search_psi1: psi1.o quantum_dots.o
 		$(CC) $(CXXflags) search_psi1 psi1.o quantum_dots.o $(LIB)
 
-search_psi2: psi2.o quantum_dots.o
-		$(CC) $(CXXflags) search_psi2 psi2.o quantum_dots.o $(LIB)
+run_psi2: psi2.o quantum_dots.o
+		$(CC) $(CXXflags) run_psi2 psi2.o quantum_dots.o $(LIB)
 
 quantum_dots.o: quantum_dots.cpp
 		$(CC) -c -O2 quantum_dots.cpp $(LIB)
