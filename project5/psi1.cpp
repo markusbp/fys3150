@@ -20,7 +20,7 @@ double grid_search_psi1(Psi1 instance, double start, double nudge, int steps, st
   instance.reset(); // clear all matrices just to be safe :)
   instance.varparam = start; // set initial value of alpha
 
-  arma::mat grid_params = arma::zeros(3, steps); // save energy and alpha
+  arma::mat grid_params = arma::zeros(4, steps); // save energy and alpha (with and without interaction)
 
   for(int i = 0; i<steps; i++)
   {
@@ -36,6 +36,7 @@ double grid_search_psi1(Psi1 instance, double start, double nudge, int steps, st
     grid_params(0, i) = curr_en;
     grid_params(1, i) = instance.varparam; // save quantities
     grid_params(2, i) = instance.averages(n, 1); // squared energy
+    grid_params(3, i) = instance.averages(n, 5); // noninteracting energy
     instance.reset(); // clear for new iteration
     // reset average and positions
     instance.varparam += nudge; // change variational parameter slightly

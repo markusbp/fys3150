@@ -4,7 +4,7 @@ CXXflags = -Wall -o
 # Here we define the library functions we nee
 LIB = -larmadillo
 
-all: run_simulation run_unit_tests virial search_psi1 search_psi2
+all: run_unit_tests virial search_psi1 search_psi2 run_psi2
 
 search_psi2: search_psi2.cpp quantum_dots.cpp
 		mpicxx -O2 -o search_psi2 search_psi2.cpp quantum_dots.cpp $(LIB)

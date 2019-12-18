@@ -37,6 +37,7 @@ class Psi1: public QuantumDots
     void update_energies(double r1, double r12, int cycle);
   public:
     Psi1(int n, double alpha, double freq, int seed);
+    void set_omega(double freq); // change omega without redoing all classes :)
 };
 
 class Psi2: public QuantumDots

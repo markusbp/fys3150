@@ -123,6 +123,11 @@ double Psi1::find_stepsize()
   return (double) sqrt(log(2.0)/(2.0*varparam*omega));
 }
 
+void Psi1::set_omega(double freq)
+{ // psi1 setter method for frequency
+  omega = freq;
+}
+
 Psi2::Psi2(int n, double alpha, double beta, double freq, int seed):
       QuantumDots(n, alpha, freq, seed)
 { // Psi2 constructor
