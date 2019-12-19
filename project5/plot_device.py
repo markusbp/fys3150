@@ -1,13 +1,12 @@
-
 import numpy as np
 import matplotlib.pyplot as plt
 # Set font
 plt.rcParams['mathtext.fontset'] = 'stix'
 plt.rcParams['font.family'] = 'STIXGeneral'
 plt.rcParams.update({'font.size': 14})
-'''
-# Grid search psi1
 
+# Grid search psi1
+################################################################################
 fig, (ax1, ax2) = plt.subplots(1,2)
 
 for w, style in zip(['0.01', '0.5', '1.00'],['--', ':', '-.']):
@@ -40,11 +39,11 @@ plt.xlabel('$\\alpha$', fontsize = 15)
 plt.ylabel('$\langle E_{T1}\\rangle$ [a.u.]', fontsize = 15)
 plt.legend(frameon = False)
 plt.show()
-'''
+
 
 # Psi2 grid search
 ################################################################################
-'''
+
 full_grid = np.genfromtxt('results/psi2/full_gridsearch_psi2', delimiter = ',')
 axes = np.genfromtxt('results/psi2/full_gs_psi2_varparams', delimiter = ',')
 
@@ -58,7 +57,7 @@ plt.xlabel('$\\alpha$', fontsize = 14)
 plt.ylabel('$\\beta$', fontsize = 14)
 plt.colorbar()
 plt.show()
-'''
+
 # Stability "analysis"
 ################################################################################
 
@@ -83,14 +82,13 @@ axs[0].set_ylabel('$\langle E \\rangle$ [a.u.]', fontsize = 15)
 plt.legend(frameon = False)
 plt.show()
 
-'''
+
 # Virial theorem
 ###########################################################################
 ek_ep_omega = np.genfromtxt('results/psi2/virial', delimiter = ',')
-
 plt.plot(ek_ep_omega[3], ek_ep_omega[0]/ek_ep_omega[1],'o', markersize = 2)
-plt.plot(ek_ep_omega[3], ek_ep_omega[4]/ek_ep_omega[6],'*', markersize = 2)
+plt.plot(ek_ep_omega[3], ek_ep_omega[4]/ek_ep_omega[6],'+', markersize = 4)
 plt.ylabel('$\langle T\\rangle/ \langle V \\rangle$', fontsize = 14)
 plt.xlabel('$\omega$', fontsize = 14)
+plt.legend(['Interacting', 'Non-Interacting'], frameon = False)
 plt.show()
-'''
